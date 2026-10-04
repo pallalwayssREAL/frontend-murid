@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Website Kelas</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <h1>📚 Website Kelas</h1>
+    </nav>
+
+    <!-- KONTEN -->
+    <div class="container">
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('info', this)">
+          📋 Info Kelas
+        </button>
+        <button class="tab" onclick="switchTab('struktur', this)">
+          👥 Struktur
+        </button>
+        <button class="tab" onclick="switchTab('pelajaran', this)">
+          📅 Pelajaran
+        </button>
+        <button class="tab" onclick="switchTab('piket', this)">🧹 Piket</button>
+        <button class="tab" onclick="switchTab('pengumuman', this)">
+          📢 Pengumuman
+        </button>
+        <button class="tab" onclick="switchTab('agenda', this)">
+          🎉 Agenda
+        </button>
+      </div>
+
+      <!-- ISI KONTEN (diisi JavaScript) -->
+      <div id="content">
+        <p style="text-align: center; padding: 40px; color: #999">
+          Memuat data...
+        </p>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
