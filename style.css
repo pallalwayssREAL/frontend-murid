@@ -236,80 +236,182 @@ body {
 }
 
 /* ============================================
-   INFO KELAS
+   STRUKTUR — BAGAN POHON VERTIKAL
    ============================================ */
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
+.tree-wrap {
+  overflow-x: auto;
+  padding: 40px 20px;
+  background: rgba(10, 14, 39, 0.4);
+  border-radius: 12px;
+  border: 1px solid var(--border);
 }
 
-.info-item {
-  background: rgba(10, 14, 39, 0.6);
-  padding: 18px 20px;
-  border-radius: 10px;
-  border-left: 3px solid var(--neon-green);
-  transition: all 0.3s ease;
+.tree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: fit-content;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 20px 0;
 }
 
-.info-item:hover {
-  background: rgba(0, 255, 157, 0.05);
-  transform: translateX(4px);
-  box-shadow: 0 0 20px rgba(0, 255, 157, 0.15);
+/* Setiap level */
+.tree-level {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  padding: 40px 0 0 0;
+  gap: 60px;
 }
 
-.info-item .label {
-  font-size: 10px;
-  color: var(--text-dim);
+/* Level pertama (wali kelas) gak ada garis atas */
+.tree-level:first-child {
+  padding-top: 0;
+}
+
+/* Node individual */
+.tree-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 0 10px;
+}
+
+/* Label jabatan */
+.tree-node .node-label {
+  font-size: 11px;
+  color: var(--neon-cyan);
   text-transform: uppercase;
-  font-weight: 700;
-  margin-bottom: 6px;
   letter-spacing: 1.5px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-align: center;
   font-family: 'JetBrains Mono', monospace;
 }
 
-.info-item .value {
-  font-size: 15px;
-  font-weight: 600;
+/* Kotak nama */
+.tree-node .node-box {
+  background: rgba(0, 255, 157, 0.08);
+  border: 1px solid var(--neon-green);
   color: var(--text);
-  word-break: break-word;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 0 15px rgba(0, 255, 157, 0.2);
+  transition: all 0.3s;
+  margin-bottom: 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.tree-node .node-box:hover {
+  box-shadow: 0 0 30px rgba(0, 255, 157, 0.5);
+  transform: scale(1.05);
+}
+
+.tree-node .node-box.top {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+  font-size: 15px;
+  padding: 14px 28px;
+  font-weight: 700;
+}
+
+.tree-node .node-box.top:hover {
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.7);
 }
 
 /* ============================================
-   TABEL
+   GARIS PENGHUBUNG
    ============================================ */
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 13px;
-  border-radius: 10px;
-  overflow: hidden;
-  font-family: 'JetBrains Mono', monospace;
+
+/* Garis vertikal turun dari parent */
+.tree-node.has-children::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 40px;
+  background: var(--neon-green);
+  opacity: 0.6;
+  box-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
 }
 
-th, td {
-  padding: 14px 18px;
-  text-align: left;
-  border-bottom: 1px solid rgba(0, 255, 157, 0.08);
+/* Garis horizontal yang menghubungkan siblings */
+.tree-level .tree-node::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--neon-green);
+  opacity: 0.6;
+  box-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
 }
 
-th {
-  background: rgba(0, 255, 157, 0.08);
-  color: var(--neon-green);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 10px;
-  letter-spacing: 1.5px;
+/* Node pertama di level: garis horizontal cuma dari tengah ke kanan */
+.tree-level .tree-node:first-child::before {
+  left: 50%;
 }
 
-tbody tr {
-  background: rgba(10, 14, 39, 0.4);
-  transition: all 0.2s;
+/* Node terakhir di level: garis horizontal cuma dari kiri ke tengah */
+.tree-level .tree-node:last-child::before {
+  right: 50%;
 }
 
-tbody tr:hover td {
-  background: rgba(0, 255, 157, 0.05);
+/* Kalau cuma 1 node di level: gak ada garis horizontal */
+.tree-level .tree-node:only-child::before {
+  display: none;
+}
+
+/* Garis vertikal turun dari garis horizontal ke node */
+.tree-level .tree-node::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 20px;
+  background: var(--neon-green);
+  opacity: 0.6;
+  box-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
+}
+
+/* Node yang punya anak: garis vertikal turun lebih panjang */
+.tree-node.has-children .node-box::after {
+  content: '';
+}
+
+/* ============================================
+   EMPTY & RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .tree-level {
+    gap: 30px;
+    padding-top: 30px;
+  }
+  
+  .tree-node .node-box {
+    font-size: 11px;
+    padding: 8px 14px;
+  }
+  
+  .tree-node .node-box.top {
+    font-size: 13px;
+    padding: 10px 20px;
+  }
+  
+  .tree-node .node-label {
+    font-size: 10px;
+  }
 }
 
 /* ============================================
