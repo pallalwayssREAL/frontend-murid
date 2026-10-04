@@ -55,11 +55,6 @@ body {
   50% { box-shadow: 0 0 40px rgba(0, 255, 157, 0.9); }
 }
 
-@keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
 /* ============================================
    NAVBAR
    ============================================ */
@@ -226,7 +221,6 @@ body {
   font-weight: 700;
   margin-bottom: 20px;
   color: var(--neon-green);
-  letter-spacing: -0.3px;
 }
 
 .card h2::before {
@@ -236,182 +230,80 @@ body {
 }
 
 /* ============================================
-   STRUKTUR — BAGAN POHON VERTIKAL
+   INFO KELAS
    ============================================ */
-.tree-wrap {
-  overflow-x: auto;
-  padding: 40px 20px;
-  background: rgba(10, 14, 39, 0.4);
-  border-radius: 12px;
-  border: 1px solid var(--border);
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
 }
 
-.tree {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: fit-content;
-  font-family: 'JetBrains Mono', monospace;
-  padding: 20px 0;
-}
-
-/* Setiap level */
-.tree-level {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  position: relative;
-  padding: 40px 0 0 0;
-  gap: 60px;
-}
-
-/* Level pertama (wali kelas) gak ada garis atas */
-.tree-level:first-child {
-  padding-top: 0;
-}
-
-/* Node individual */
-.tree-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  padding: 0 10px;
-}
-
-/* Label jabatan */
-.tree-node .node-label {
-  font-size: 11px;
-  color: var(--neon-cyan);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  text-align: center;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* Kotak nama */
-.tree-node .node-box {
-  background: rgba(0, 255, 157, 0.08);
-  border: 1px solid var(--neon-green);
-  color: var(--text);
-  padding: 10px 20px;
+.info-item {
+  background: rgba(10, 14, 39, 0.6);
+  padding: 18px 20px;
   border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-  box-shadow: 0 0 15px rgba(0, 255, 157, 0.2);
-  transition: all 0.3s;
-  margin-bottom: 8px;
+  border-left: 3px solid var(--neon-green);
+  transition: all 0.3s ease;
+}
+
+.info-item:hover {
+  background: rgba(0, 255, 157, 0.05);
+  transform: translateX(4px);
+  box-shadow: 0 0 20px rgba(0, 255, 157, 0.15);
+}
+
+.info-item .label {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: 1.5px;
   font-family: 'JetBrains Mono', monospace;
 }
 
-.tree-node .node-box:hover {
-  box-shadow: 0 0 30px rgba(0, 255, 157, 0.5);
-  transform: scale(1.05);
-}
-
-.tree-node .node-box.top {
-  background: rgba(168, 85, 247, 0.15);
-  border-color: var(--neon-purple);
-  box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+.info-item .value {
   font-size: 15px;
-  padding: 14px 28px;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-word;
+}
+
+/* ============================================
+   TABEL
+   ============================================ */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+  border-radius: 10px;
+  overflow: hidden;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+th, td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 255, 157, 0.08);
+}
+
+th {
+  background: rgba(0, 255, 157, 0.08);
+  color: var(--neon-green);
   font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 1.5px;
 }
 
-.tree-node .node-box.top:hover {
-  box-shadow: 0 0 40px rgba(168, 85, 247, 0.7);
+tbody tr {
+  background: rgba(10, 14, 39, 0.4);
+  transition: all 0.2s;
 }
 
-/* ============================================
-   GARIS PENGHUBUNG
-   ============================================ */
-
-/* Garis vertikal turun dari parent */
-.tree-node.has-children::after {
-  content: '';
-  position: absolute;
-  bottom: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 40px;
-  background: var(--neon-green);
-  opacity: 0.6;
-  box-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
-}
-
-/* Garis horizontal yang menghubungkan siblings */
-.tree-level .tree-node::before {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--neon-green);
-  opacity: 0.6;
-  box-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
-}
-
-/* Node pertama di level: garis horizontal cuma dari tengah ke kanan */
-.tree-level .tree-node:first-child::before {
-  left: 50%;
-}
-
-/* Node terakhir di level: garis horizontal cuma dari kiri ke tengah */
-.tree-level .tree-node:last-child::before {
-  right: 50%;
-}
-
-/* Kalau cuma 1 node di level: gak ada garis horizontal */
-.tree-level .tree-node:only-child::before {
-  display: none;
-}
-
-/* Garis vertikal turun dari garis horizontal ke node */
-.tree-level .tree-node::after {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 20px;
-  background: var(--neon-green);
-  opacity: 0.6;
-  box-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
-}
-
-/* Node yang punya anak: garis vertikal turun lebih panjang */
-.tree-node.has-children .node-box::after {
-  content: '';
-}
-
-/* ============================================
-   EMPTY & RESPONSIVE
-   ============================================ */
-@media (max-width: 768px) {
-  .tree-level {
-    gap: 30px;
-    padding-top: 30px;
-  }
-  
-  .tree-node .node-box {
-    font-size: 11px;
-    padding: 8px 14px;
-  }
-  
-  .tree-node .node-box.top {
-    font-size: 13px;
-    padding: 10px 20px;
-  }
-  
-  .tree-node .node-label {
-    font-size: 10px;
-  }
+tbody tr:hover td {
+  background: rgba(0, 255, 157, 0.05);
 }
 
 /* ============================================
@@ -570,7 +462,7 @@ body {
 }
 
 /* ============================================
-   STRUKTUR — BAGAN POHON
+   STRUKTUR — BAGAN POHON VERTIKAL
    ============================================ */
 .tree-wrap {
   overflow-x: auto;
@@ -586,14 +478,20 @@ body {
   align-items: center;
   min-width: fit-content;
   font-family: 'JetBrains Mono', monospace;
+  padding: 20px 0;
 }
 
 .tree-level {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  align-items: flex-start;
   position: relative;
-  padding: 30px 0;
+  padding: 40px 0 0 0;
+  gap: 60px;
+}
+
+.tree-level:first-child {
+  padding-top: 0;
 }
 
 .tree-node {
@@ -605,28 +503,29 @@ body {
 }
 
 .tree-node .node-label {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--neon-cyan);
   text-transform: uppercase;
   letter-spacing: 1.5px;
   font-weight: 700;
-  margin-bottom: 8px;
-  opacity: 0.9;
+  margin-bottom: 10px;
   text-align: center;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .tree-node .node-box {
   background: rgba(0, 255, 157, 0.08);
   border: 1px solid var(--neon-green);
   color: var(--text);
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
   box-shadow: 0 0 15px rgba(0, 255, 157, 0.2);
   transition: all 0.3s;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .tree-node .node-box:hover {
@@ -637,31 +536,43 @@ body {
 .tree-node .node-box.top {
   background: rgba(168, 85, 247, 0.15);
   border-color: var(--neon-purple);
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
-  font-size: 14px;
-  padding: 12px 24px;
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+  font-size: 15px;
+  padding: 14px 28px;
+  font-weight: 700;
 }
 
-.tree-level.with-lines::before {
+.tree-node .node-box.top:hover {
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.7);
+}
+
+.tree-level .tree-node::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
+  top: -20px;
+  left: 0;
+  right: 0;
   height: 2px;
   background: var(--neon-green);
-  opacity: 0.3;
+  opacity: 0.6;
+  box-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
 }
 
-.tree-level.with-lines .tree-node::before {
+.tree-level .tree-node:first-child::before { left: 50%; }
+.tree-level .tree-node:last-child::before { right: 50%; }
+.tree-level .tree-node:only-child::before { display: none; }
+
+.tree-level .tree-node::after {
   content: '';
   position: absolute;
-  top: -30px;
+  top: -20px;
   left: 50%;
+  transform: translateX(-50%);
   width: 2px;
-  height: 30px;
+  height: 20px;
   background: var(--neon-green);
-  opacity: 0.3;
+  opacity: 0.6;
+  box-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
 }
 
 /* ============================================
@@ -684,27 +595,19 @@ body {
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
-  .navbar {
-    padding: 12px 16px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
+  .navbar { padding: 12px 16px; flex-wrap: wrap; gap: 12px; }
   .logo-text .main { font-size: 14px; }
   .logo-text .sub { font-size: 9px; }
   .logo-img { width: 40px; height: 40px; }
-
   .nav-user { font-size: 11px; gap: 8px; flex-wrap: wrap; }
-
   .container { margin: 20px auto; padding: 0 16px; }
   .card { padding: 20px; }
-
   .tab { padding: 8px 12px; font-size: 12px; }
-
   .info-grid { grid-template-columns: 1fr; }
   table { font-size: 11px; }
   th, td { padding: 10px 12px; }
-
-  .tree-level { gap: 20px; }
-  .tree-node .node-box { font-size: 11px; padding: 6px 12px; }
+  .tree-level { gap: 30px; padding-top: 30px; }
+  .tree-node .node-box { font-size: 11px; padding: 8px 14px; }
+  .tree-node .node-box.top { font-size: 13px; padding: 10px 20px; }
+  .tree-node .node-label { font-size: 10px; }
 }
