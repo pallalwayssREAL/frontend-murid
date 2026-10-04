@@ -130,6 +130,17 @@ function renderStruktur() {
     `;
   }
 
+  return `
+    <div class="card">
+      <h2>Struktur Organisasi Kelas</h2>
+      <div class="tree-wrap">
+        <div class="tree">${buildTree(data)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function buildTree(data) {
   const groups = {};
   data.forEach((item) => {
     const j = item.jabatan.toLowerCase();
@@ -148,14 +159,19 @@ function renderStruktur() {
     groups[key].push(item);
   });
 
-  const makeNode = (label, items, isTop = false) => {
+  const makeNode = (label, items, isTop = false, hasChildren = false) => {
     if (!items || !items.length) return "";
     return `
-      <div class="tree-node">
+      <div class="tree-node ${hasChildren ? "has-children" : ""}">
         <div class="node-label">${label}</div>
         ${items.map((n) => `<div class="node-box ${isTop ? "top" : ""}">${n.nama}</div>`).join("")}
       </div>
     `;
+  };
+
+  const makeLevel = (nodesHtml, withLines = true) => {
+    if (!nodesHtml.trim()) return "";
+    return `<div class="tree-level ${withLines ? "with-lines" : ""}">${nodesHtml}</div>`;
   };
 
   const has = (...keys) => keys.some((k) => groups[k] && groups[k].length);
@@ -163,37 +179,43 @@ function renderStruktur() {
   let html = "";
 
   if (groups.walikelas) {
-    html += `<div class="tree-level">${makeNode("Wali Kelas", groups.walikelas, true)}</div>`;
+    html += makeLevel(
+      makeNode("Wali Kelas", groups.walikelas, true, true),
+      false
+    );
   }
 
   if (has("ketua", "wakil")) {
-    html += `<div class="tree-level">${makeNode("Ketua Kelas", groups.ketua)}${makeNode("Wakil Ketua", groups.wakil)}</div>`;
+    html += makeLevel(
+      makeNode("Ketua Kelas", groups.ketua) +
+        makeNode("Wakil Ketua", groups.wakil)
+    );
   }
 
   if (has("sekretaris", "bendahara")) {
-    html += `<div class="tree-level">${makeNode("Sekretaris", groups.sekretaris)}${makeNode("Bendahara", groups.bendahara)}</div>`;
+    html += makeLevel(
+      makeNode("Sekretaris", groups.sekretaris) +
+        makeNode("Bendahara", groups.bendahara)
+    );
   }
 
   if (has("keamanan", "kebersihan", "kesehatan")) {
-    html += `<div class="tree-level">${makeNode("Keamanan", groups.keamanan)}${makeNode("Kebersihan", groups.kebersihan)}${makeNode("Kesehatan", groups.kesehatan)}</div>`;
+    html += makeLevel(
+      makeNode("Keamanan", groups.keamanan) +
+        makeNode("Kebersihan", groups.kebersihan) +
+        makeNode("Kesehatan", groups.kesehatan)
+    );
   }
 
   if (groups.peralatan) {
-    html += `<div class="tree-level">${makeNode("Peralatan", groups.peralatan)}</div>`;
+    html += makeLevel(makeNode("Peralatan", groups.peralatan));
   }
 
   if (groups.lainnya) {
-    html += `<div class="tree-level">${makeNode("Anggota", groups.lainnya)}</div>`;
+    html += makeLevel(makeNode("Anggota", groups.lainnya));
   }
 
-  return `
-    <div class="card">
-      <h2>Struktur Organisasi Kelas</h2>
-      <div class="tree-wrap">
-        <div class="tree">${html}</div>
-      </div>
-    </div>
-  `;
+  return html;
 }
 
 // ============================================
