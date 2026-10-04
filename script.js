@@ -1,8 +1,6 @@
 // ============================================
 // KONFIGURASI API
 // ============================================
-// Di lokal: http://localhost:5000
-// Nanti setelah deploy ke Railway, ganti jadi URL Railway kamu
 const API = "https://backend-kelas-production.up.railway.app";
 
 // ============================================
@@ -14,33 +12,30 @@ let DATA = {
   cleanings: [],
   announcements: [],
   events: [],
-  users: [],
+  structure: [],
 };
 
-// ============================================
-// UTIL
-// ============================================
 const $ = (id) => document.getElementById(id);
 
-async function fetchJSON(url) {
-  const res = await fetch(API + url);
-  if (!res.ok) throw new Error("Gagal fetch " + url);
-  return res.json();
-}
+// ============================================
+// LOAD SEMUA DATA
+// ============================================
+async function loadAllData() {
+  const fetchJSON = async (url) => {
+    const res = await fetch(API + url);
+    if (!res.ok) throw new Error("Gagal fetch " + url);
+    return res.json();
+  };
 
-// ============================================
-// LOAD SEMUA DATA DARI BACKEND
-// ============================================
-async function loadData() {
   try {
-    const [info, schedules, cleanings, announcements, events, users] =
+    const [info, schedules, cleanings, announcements, events, structure] =
       await Promise.all([
         fetchJSON("/api/class-info"),
         fetchJSON("/api/schedule"),
         fetchJSON("/api/cleaning"),
         fetchJSON("/api/announcement"),
         fetchJSON("/api/event"),
-        fetchJSON("/api/auth/users"),
+        fetchJSON("/api/structure"),
       ]);
 
     DATA = {
@@ -49,7 +44,7 @@ async function loadData() {
       cleanings: cleanings.cleanings || [],
       announcements: announcements.announcements || [],
       events: events.events || [],
-      users: users.users || [],
+      structure: structure.structure || [],
     };
 
     renderTab("info");
@@ -57,9 +52,7 @@ async function loadData() {
     console.error(err);
     $("content").innerHTML = `
       <div class="card">
-        <p style="text-align:center;padding:40px;color:#e74c3c;">
-          ❌ Gagal memuat data. Pastikan backend jalan di ${API}
-        </p>
+        <div class="empty">Gagal memuat data. Coba refresh halaman.</div>
       </div>
     `;
   }
@@ -69,9 +62,7 @@ async function loadData() {
 // TABS
 // ============================================
 function switchTab(tab, btn) {
-  document
-    .querySelectorAll(".tab")
-    .forEach((t) => t.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
   if (btn) btn.classList.add("active");
   renderTab(tab);
 }
@@ -93,7 +84,7 @@ function renderInfo() {
   const i = DATA.info || {};
   return `
     <div class="card">
-      <h2>📋 Info Kelas</h2>
+      <h2>Info Kelas</h2>
       <div class="info-grid">
         <div class="info-item">
           <div class="label">Nama Kelas</div>
@@ -125,34 +116,81 @@ function renderInfo() {
 }
 
 // ============================================
-// TAB 2: STRUKTUR KELAS
+// TAB 2: STRUKTUR (BAGAN POHON)
 // ============================================
 function renderStruktur() {
-  const users = (DATA.users || []).filter((u) => u.jabatan);
-  if (!users.length) {
+  const data = DATA.structure || [];
+
+  if (!data.length) {
     return `
       <div class="card">
-        <h2>👥 Struktur Organisasi Kelas</h2>
-        <div class="empty">Belum ada data struktur kelas.</div>
+        <h2>Struktur Organisasi</h2>
+        <div class="empty">Belum ada data struktur</div>
       </div>
     `;
   }
 
+  const groups = {};
+  data.forEach((item) => {
+    const j = item.jabatan.toLowerCase();
+    let key = "lainnya";
+    if (j.includes("wali")) key = "walikelas";
+    else if (j.includes("wakil")) key = "wakil";
+    else if (j.includes("ketua")) key = "ketua";
+    else if (j.includes("sekretaris")) key = "sekretaris";
+    else if (j.includes("bendahara")) key = "bendahara";
+    else if (j.includes("keamanan")) key = "keamanan";
+    else if (j.includes("kebersihan")) key = "kebersihan";
+    else if (j.includes("kesehatan")) key = "kesehatan";
+    else if (j.includes("peralatan")) key = "peralatan";
+
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+  });
+
+  const makeNode = (label, items, isTop = false) => {
+    if (!items || !items.length) return "";
+    return `
+      <div class="tree-node">
+        <div class="node-label">${label}</div>
+        ${items.map((n) => `<div class="node-box ${isTop ? "top" : ""}">${n.nama}</div>`).join("")}
+      </div>
+    `;
+  };
+
+  const has = (...keys) => keys.some((k) => groups[k] && groups[k].length);
+
+  let html = "";
+
+  if (groups.walikelas) {
+    html += `<div class="tree-level">${makeNode("Wali Kelas", groups.walikelas, true)}</div>`;
+  }
+
+  if (has("ketua", "wakil")) {
+    html += `<div class="tree-level">${makeNode("Ketua Kelas", groups.ketua)}${makeNode("Wakil Ketua", groups.wakil)}</div>`;
+  }
+
+  if (has("sekretaris", "bendahara")) {
+    html += `<div class="tree-level">${makeNode("Sekretaris", groups.sekretaris)}${makeNode("Bendahara", groups.bendahara)}</div>`;
+  }
+
+  if (has("keamanan", "kebersihan", "kesehatan")) {
+    html += `<div class="tree-level">${makeNode("Keamanan", groups.keamanan)}${makeNode("Kebersihan", groups.kebersihan)}${makeNode("Kesehatan", groups.kesehatan)}</div>`;
+  }
+
+  if (groups.peralatan) {
+    html += `<div class="tree-level">${makeNode("Peralatan", groups.peralatan)}</div>`;
+  }
+
+  if (groups.lainnya) {
+    html += `<div class="tree-level">${makeNode("Anggota", groups.lainnya)}</div>`;
+  }
+
   return `
     <div class="card">
-      <h2>👥 Struktur Organisasi Kelas</h2>
-      <div class="struktur-grid">
-        ${users
-          .map(
-            (u) => `
-          <div class="struktur-card">
-            <div class="avatar">${(u.name || "?").charAt(0).toUpperCase()}</div>
-            <div class="jabatan">${u.jabatan}</div>
-            <div class="nama">${u.name}</div>
-          </div>
-        `,
-          )
-          .join("")}
+      <h2>Struktur Organisasi Kelas</h2>
+      <div class="tree-wrap">
+        <div class="tree">${html}</div>
       </div>
     </div>
   `;
@@ -163,10 +201,10 @@ function renderStruktur() {
 // ============================================
 function renderPelajaran() {
   const data = DATA.schedules || [];
-  let html = '<div class="card"><h2>📅 Jadwal Pelajaran</h2>';
+  let html = '<div class="card"><h2>Jadwal Pelajaran</h2>';
 
   if (!data.length) {
-    html += '<div class="empty">Belum ada jadwal pelajaran.</div>';
+    html += '<div class="empty">Belum ada jadwal pelajaran</div>';
   } else {
     html += `
       <table>
@@ -192,7 +230,7 @@ function renderPelajaran() {
               <td>${d.guru || "-"}</td>
               <td>${d.ruangan || "-"}</td>
             </tr>
-          `,
+          `
             )
             .join("")}
         </tbody>
@@ -208,10 +246,10 @@ function renderPelajaran() {
 // ============================================
 function renderPiket() {
   const data = DATA.cleanings || [];
-  let html = '<div class="card"><h2>🧹 Jadwal Piket Kebersihan</h2>';
+  let html = '<div class="card"><h2>Jadwal Piket Kebersihan</h2>';
 
   if (!data.length) {
-    html += '<div class="empty">Belum ada jadwal piket.</div>';
+    html += '<div class="empty">Belum ada jadwal piket</div>';
   } else {
     html += '<div class="piket-grid">';
     data.forEach((d) => {
@@ -236,10 +274,10 @@ function renderPiket() {
 // ============================================
 function renderPengumuman() {
   const data = DATA.announcements || [];
-  let html = '<div class="card"><h2>📢 Pengumuman</h2>';
+  let html = '<div class="card"><h2>Pengumuman</h2>';
 
   if (!data.length) {
-    html += '<div class="empty">Belum ada pengumuman.</div>';
+    html += '<div class="empty">Belum ada pengumuman</div>';
   } else {
     data.forEach((a) => {
       const tanggal = a.createdAt
@@ -270,10 +308,10 @@ function renderPengumuman() {
 // ============================================
 function renderAgenda() {
   const data = DATA.events || [];
-  let html = '<div class="card"><h2>🎉 Agenda Kelas</h2>';
+  let html = '<div class="card"><h2>Agenda Kelas</h2>';
 
   if (!data.length) {
-    html += '<div class="empty">Belum ada agenda kelas.</div>';
+    html += '<div class="empty">Belum ada agenda kelas</div>';
   } else {
     data.forEach((e) => {
       const d = new Date(e.tanggal);
@@ -306,4 +344,4 @@ function renderAgenda() {
 // ============================================
 // START
 // ============================================
-loadData();
+loadAllData();
