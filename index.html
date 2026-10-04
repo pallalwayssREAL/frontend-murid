@@ -1,47 +1,44 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Website Kelas</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <!-- NAVBAR -->
-    <nav class="navbar">
-      <h1>📚 Website Kelas</h1>
-    </nav>
-
-    <!-- KONTEN -->
-    <div class="container">
-      <!-- TABS -->
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('info', this)">
-          📋 Info Kelas
-        </button>
-        <button class="tab" onclick="switchTab('struktur', this)">
-          👥 Struktur
-        </button>
-        <button class="tab" onclick="switchTab('pelajaran', this)">
-          📅 Pelajaran
-        </button>
-        <button class="tab" onclick="switchTab('piket', this)">🧹 Piket</button>
-        <button class="tab" onclick="switchTab('pengumuman', this)">
-          📢 Pengumuman
-        </button>
-        <button class="tab" onclick="switchTab('agenda', this)">
-          🎉 Agenda
-        </button>
-      </div>
-
-      <!-- ISI KONTEN (diisi JavaScript) -->
-      <div id="content">
-        <p style="text-align: center; padding: 40px; color: #999">
-          Memuat data...
-        </p>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Kelas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <img src="https://i.imgur.com/6x9uyAN.png" alt="Logo Kelas" class="logo-img">
+      <div class="logo-text">
+        <span class="main">XI RPL</span>
+        <span class="sub">CLASS.SYS</span>
       </div>
     </div>
+    <div class="nav-user">
+      <a href="https://admin-kelas-rpl.pallalwayss.workers.dev" class="btn-outline">🔐 Admin</a>
+    </div>
+  </nav>
 
-    <script src="script.js"></script>
-  </body>
+  <!-- KONTEN -->
+  <div class="container">
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('info', this)">📋 Info Kelas</button>
+      <button class="tab" onclick="switchTab('struktur', this)">👥 Struktur</button>
+      <button class="tab" onclick="switchTab('pelajaran', this)">📅 Pelajaran</button>
+      <button class="tab" onclick="switchTab('piket', this)">🧹 Piket</button>
+      <button class="tab" onclick="switchTab('pengumuman', this)">📢 Pengumuman</button>
+      <button class="tab" onclick="switchTab('agenda', this)">🎉 Agenda</button>
+    </div>
+
+    <!-- ISI KONTEN -->
+    <div id="content">
+      <p style="text-align:center;padding:40px;color:#94a3b8;">Memuat data...</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>
